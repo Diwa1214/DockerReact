@@ -8,6 +8,7 @@ pipeline {
       }
     }
      stage('Push to Elastic Beanstalk') {
+         sh 'env | sort'
   environment {
     AWS_ACCESS_KEY_ID = credentials('AWS_ACCESS_KEY')
     AWS_SECRET_ACCESS_KEY = credentials('AWS_SECERT_KEY')
