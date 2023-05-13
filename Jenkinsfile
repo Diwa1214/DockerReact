@@ -1,10 +1,12 @@
 pipeline {
     agent any
-
+    
     stages {
-        stage('Build') {
+        stage('Build Docker image') {
             steps {
-                sh 'docker version'
+                script {
+                    def dockerImage = docker.build("diwa1214/dev:dockerreact1", "--file Dockerfile .")
+                }
             }
         }
     }
