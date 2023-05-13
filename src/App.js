@@ -7,7 +7,7 @@ function App() {
       <header className="App-header">
         <img src={logo} className="App-logo" alt="logo" />
         <p>
-          Edit <code>src/App.js</code> and save to Dockers
+          Edit <code>src/App.js</code> and save to Docker cotnao9ner
         </p>
         <a
           className="App-link"
