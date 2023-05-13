@@ -7,8 +7,7 @@ pipeline {
       	sh 'docker build -t diwa1214/dev:dockerreact1 .'
       }
     }
-  }
-  stage('Push to Elastic Beanstalk') {
+     stage('Push to Elastic Beanstalk') {
   environment {
     AWS_ACCESS_KEY_ID = credentials('AWS_ACCESS_KEY')
     AWS_SECRET_ACCESS_KEY = credentials('AWS_SECERT_KEY')
@@ -31,4 +30,6 @@ pipeline {
     }
   }
 }
+  }
+ 
 }
