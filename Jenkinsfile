@@ -1,36 +1,27 @@
-pipeline {
-	agent none
-  stages {
-    stage('Docker Build') {
-    	agent any
-      steps {
-      	sh 'docker build -t diwa1214/dev:dockerreact1 .'
+pipeline{
+   agent: any
+
+   stages{
+      stage('Build'){
+         steps {
+            sh 'printenv'
+         }
       }
-    }
-     stage('Push to Elastic Beanstalk') {
-         sh 'env | sort'
-  environment {
-    AWS_ACCESS_KEY_ID = credentials('AWS_ACCESS_KEY')
-    AWS_SECRET_ACCESS_KEY = credentials('AWS_SECERT_KEY')
-    DOCKER_IMAGE_NAME = 'dockerreact1'
-    ELASTIC_BEANSTALK_ENV_NAME = 'Docker-react-env'
-    ELASTIC_BEANSTALK_APP_NAME = 'docker-react'
-    AWS_REGION = 'eu-central-1'
-    AWS_ACCOUNT_ID = '862399869074'
-  }
-  steps {
-    withCredentials([
-      [$class: 'AmazonWebServicesCredentialsBinding', accessKeyVariable: 'AWS_ACCESS_KEY_ID', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY']
-    ]) {
-      sh "eval \$(aws ecr get-login --no-include-email --region ${env.AWS_REGION})"
-      sh "docker tag ${env.DOCKER_IMAGE_NAME} ${env.AWS_ACCOUNT_ID}.dkr.ecr.${env.AWS_REGION}.amazonaws.com/${env.DOCKER_IMAGE_NAME}"
-      sh "docker push ${env.AWS_ACCOUNT_ID}.dkr.ecr.${env.AWS_REGION}.amazonaws.com/${env.DOCKER_IMAGE_NAME}"
-      sh "eb init ${env.ELASTIC_BEANSTALK_APP_NAME} --region ${env.AWS_REGION} --platform Docker"
-      sh "eb use ${env.ELASTIC_BEANSTALK_ENV_NAME}"
-      sh "eb deploy"
-    }
-  }
-}
-  }
- 
+
+      stage('Publish ECR'){
+          steps{
+             withEnv (["AWS_ACCESS_KEY = $(env.AWS_ACCESS_KEY)","AWS_SECRET_KEY = $(env.AWS_SECRET_KEY)","AWS_DEFAULT_REGION = $(env.AWS_DEFAULT_REGION)"]){
+     
+                 sh "docker login -u AWS -p $(aws ecr-public get-login-password --region us-east-1) public.ecr.aws/i5m8g0d6"
+              
+                 sh "docker build -t docker_react ."
+
+                 sh "docker tag docker_react:latest public.ecr.aws/i5m8g0d6/docker_react:latest"
+
+                 sh "docker push public.ecr.aws/i5m8g0d6/docker_react:latest"
+
+             }
+          }
+      }
+   }
 }
