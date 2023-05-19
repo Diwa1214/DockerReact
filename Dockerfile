@@ -1,4 +1,6 @@
-FROM node:18-alpine
+# Buid phase
+
+FROM node:18-alpine as ProdBuilder
 
 WORKDIR /usr/app
 
@@ -8,5 +10,12 @@ RUN npm install
 
 COPY . .
 
-CMD ["npm","run","start"]
+RUN  npm run build
+
+
+# Run phase
+
+FROM nginx
+
+COPY --from=ProdBuilder  /usr/app/build /usr/share/nginx/html
 
